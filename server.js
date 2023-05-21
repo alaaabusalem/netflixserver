@@ -102,9 +102,17 @@ function updateFavList(req,res){
     SET title = $1, release_date = $2, overview=$3,comment=$4 WHERE id=${updatedData.id};`
     const values = [updatedData.title, updatedData.release_date, updatedData.overview, updatedData.comment];
     client.query(sql, values)
-        .then(data => {
-            res.send('data has been updated');
-        })
+    .then(data => {
+        const sql = `SELECT * FROM favlist;`;
+        client.query(sql)
+            .then(allData => {
+                res.send(allData.rows)
+            })
+            .catch((error) => {
+                errorHandler(error, req, res)
+            })
+    })
+
         .catch(error => {
             errorHandler(error, req, res);
         })
@@ -113,9 +121,19 @@ function deletitem(req,res){
     const id = req.params.id;
     const sql = `DELETE FROM favlist WHERE id=${id};`
     client.query(sql)
-        .then(data => {
-            res.send('data has been deleted');
-        })
+    .then(data => {
+        const sql = `SELECT * FROM favlist;`;
+        client.query(sql)
+            .then(allData => {
+                res.send(allData.rows)
+            })
+            .catch((error) => {
+                errorHandler(error, req, res)
+            })
+    })
+
+           
+        
         .catch(error => {
             errorHandler(error, req, res);
         })
