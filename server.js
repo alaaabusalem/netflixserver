@@ -33,6 +33,10 @@ let obj2 = {
     resonseText: "Sorry, something went wrong"
 };
 
+server.delete('/deletitem/:id', deletitem);
+server.put('/updateFavList', updateFavList);
+server.put('/updateFavList', updateFavList);
+server.get('/gitFavList', gitFavList);
 server.post('/addToFav', addToFav);
 server.get('/trending', TrendyMoviesEveryWeek);
 server.get('/servererror', (req, res) => {
@@ -64,7 +68,20 @@ function TrendyMoviesEveryWeek(req, res) {
         errorHandler(error, req, res);
     }
 }
+function gitFavList(req, res) {
+    
 
+       let sql=`SELECT * FROM favlist`
+      client.query(sql)
+      .then(data=>{
+        console.log(data.rows);
+        res.send(data.rows);
+      })
+      .catch(error => {
+        errorHandler(error, req, res);
+    })
+    
+}
 function addToFav(req, res) {
     const favArray = req.body;
     const sql = `INSERT INTO favlist (id,title, release_date, overview, comment)
@@ -73,6 +90,31 @@ function addToFav(req, res) {
     client.query(sql, values)
         .then(data => {
             res.send('data has been added');
+        })
+        .catch(error => {
+            errorHandler(error, req, res);
+        })
+}
+
+function updateFavList(req,res){
+    const updatedData = req.body;
+    const sql = `UPDATE favlist
+    SET title = $1, release_date = $2, overview=$3,comment=$4 WHERE id=${updatedData.id};`
+    const values = [updatedData.title, updatedData.release_date, updatedData.overview, updatedData.comment];
+    client.query(sql, values)
+        .then(data => {
+            res.send('data has been updated');
+        })
+        .catch(error => {
+            errorHandler(error, req, res);
+        })
+}
+function deletitem(req,res){
+    const id = req.params.id;
+    const sql = `DELETE FROM favlist WHERE id=${id};`
+    client.query(sql)
+        .then(data => {
+            res.send('data has been deleted');
         })
         .catch(error => {
             errorHandler(error, req, res);
